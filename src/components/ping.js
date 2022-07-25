@@ -48,6 +48,7 @@ export function createPing ({ network }) {
     const peer = PeerId.createFromB58String(peerId)
 
     const storedPeer = libp2p.peerStore.get(peer)
+    // @ts-ignore
     let id = storedPeer && storedPeer.id
 
     if (!id) {

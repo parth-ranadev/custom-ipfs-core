@@ -82,12 +82,25 @@ export function createLibp2p ({
  * @param {Multiaddr[]} input.multiaddrs
  * @returns {Libp2pOptions}
  */
-function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, peerId, multiaddrs }) {
+function getLibp2pOptions ({
+  options,
+  config,
+  datastore,
+  keys,
+  keychainConfig,
+  peerId,
+  multiaddrs
+}) {
   const getPubsubRouter = () => {
     const router = get(config, 'Pubsub.Router') || 'gossipsub'
 
     if (!routers[router]) {
-      throw errCode(new Error(`Router unavailable. Configure libp2p.modules.pubsub to use the ${router} router.`), 'ERR_NOT_SUPPORTED')
+      throw errCode(
+        new Error(
+          `Router unavailable. Configure libp2p.modules.pubsub to use the ${router} router.`
+        ),
+        'ERR_NOT_SUPPORTED'
+      )
     }
 
     return routers[router]
@@ -103,6 +116,7 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
     /**
      * @type {Partial<Libp2pOptions["modules"]>}
      */
+    // @ts-ignore
     modules: {
       pubsub: getPubsubRouter(),
       contentRouting: [],
@@ -111,20 +125,40 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
     config: {
       peerDiscovery: {
         mdns: {
-          enabled: get(options, 'config.Discovery.MDNS.Enabled', get(config, 'Discovery.MDNS.Enabled', true))
+          enabled: get(
+            options,
+            'config.Discovery.MDNS.Enabled',
+            get(config, 'Discovery.MDNS.Enabled', true)
+          )
         },
         webRTCStar: {
-          enabled: get(options, 'config.Discovery.webRTCStar.Enabled', get(config, 'Discovery.webRTCStar.Enabled', true))
+          enabled: get(
+            options,
+            'config.Discovery.webRTCStar.Enabled',
+            get(config, 'Discovery.webRTCStar.Enabled', true)
+          )
         },
         bootstrap: {
           list: get(options, 'config.Bootstrap', get(config, 'Bootstrap', []))
         }
       },
       relay: {
-        enabled: get(options, 'relay.enabled', get(config, 'relay.enabled', true)),
+        enabled: get(
+          options,
+          'relay.enabled',
+          get(config, 'relay.enabled', true)
+        ),
         hop: {
-          enabled: get(options, 'relay.hop.enabled', get(config, 'relay.hop.enabled', false)),
-          active: get(options, 'relay.hop.active', get(config, 'relay.hop.active', false))
+          enabled: get(
+            options,
+            'relay.hop.enabled',
+            get(config, 'relay.hop.enabled', false)
+          ),
+          active: get(
+            options,
+            'relay.hop.active',
+            get(config, 'relay.hop.active', false)
+          )
         }
       },
       dht: {
@@ -136,20 +170,40 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
         }
       },
       pubsub: {
-        enabled: get(options, 'config.Pubsub.Enabled', get(config, 'Pubsub.Enabled', true))
+        enabled: get(
+          options,
+          'config.Pubsub.Enabled',
+          get(config, 'Pubsub.Enabled', true)
+        )
       },
       nat: {
         enabled: !get(config, 'Swarm.DisableNatPortMap', false)
       }
     },
     addresses: {
-      listen: multiaddrs.map(ma => ma.toString()),
-      announce: get(options, 'addresses.announce', get(config, 'Addresses.Announce', [])),
-      noAnnounce: get(options, 'addresses.noAnnounce', get(config, 'Addresses.NoAnnounce', []))
+      listen: multiaddrs.map((ma) => ma.toString()),
+      announce: get(
+        options,
+        'addresses.announce',
+        get(config, 'Addresses.Announce', [])
+      ),
+      noAnnounce: get(
+        options,
+        'addresses.noAnnounce',
+        get(config, 'Addresses.NoAnnounce', [])
+      )
     },
     connectionManager: get(options, 'connectionManager', {
-      maxConnections: get(options, 'config.Swarm.ConnMgr.HighWater', get(config, 'Swarm.ConnMgr.HighWater')),
-      minConnections: get(options, 'config.Swarm.ConnMgr.LowWater', get(config, 'Swarm.ConnMgr.LowWater'))
+      maxConnections: get(
+        options,
+        'config.Swarm.ConnMgr.HighWater',
+        get(config, 'Swarm.ConnMgr.HighWater')
+      ),
+      minConnections: get(
+        options,
+        'config.Swarm.ConnMgr.LowWater',
+        get(config, 'Swarm.ConnMgr.LowWater')
+      )
     }),
     keychain: {
       datastore: keys,
@@ -175,20 +229,27 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
     constructorOptions
   )
 
-  const bootstrapList = get(libp2pConfig, 'config.peerDiscovery.bootstrap.list', [])
+  const bootstrapList = get(
+    libp2pConfig,
+    'config.peerDiscovery.bootstrap.list',
+    []
+  )
 
   if (bootstrapList.length > 0) {
     libp2pConfig.modules.peerDiscovery.push(bootstrap)
   }
 
   // Set up Delegate Routing based on the presence of Delegates in the config
-  const delegateHosts = get(options, 'config.Addresses.Delegates',
+  const delegateHosts = get(
+    options,
+    'config.Addresses.Delegates',
     get(config, 'Addresses.Delegates', [])
   )
 
   if (delegateHosts.length > 0) {
     // Pick a random delegate host
-    const delegateString = delegateHosts[Math.floor(Math.random() * delegateHosts.length)]
+    const delegateString =
+      delegateHosts[Math.floor(Math.random() * delegateHosts.length)]
     const delegateAddr = new Multiaddr(delegateString).toOptions()
     const delegateApiOptions = {
       host: delegateAddr.host,
@@ -200,11 +261,16 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
 
     const delegateHttpClient = ipfsHttpClient(delegateApiOptions)
 
-    libp2pOptions.modules.contentRouting = libp2pOptions.modules.contentRouting || []
-    libp2pOptions.modules.contentRouting.push(new DelegatedContentRouter(peerId, delegateHttpClient))
+    libp2pOptions.modules.contentRouting =
+      libp2pOptions.modules.contentRouting || []
+    libp2pOptions.modules.contentRouting.push(
+      new DelegatedContentRouter(peerId, delegateHttpClient)
+    )
 
     libp2pOptions.modules.peerRouting = libp2pOptions.modules.peerRouting || []
-    libp2pOptions.modules.peerRouting.push(new DelegatedPeerRouter(delegateHttpClient))
+    libp2pOptions.modules.peerRouting.push(
+      new DelegatedPeerRouter(delegateHttpClient)
+    )
   }
 
   return libp2pConfig

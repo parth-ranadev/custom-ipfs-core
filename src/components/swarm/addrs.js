@@ -11,6 +11,7 @@ export function createAddrs ({ network }) {
   async function addrs (options = {}) { // eslint-disable-line require-await
     const peers = []
     const { libp2p } = await network.use(options)
+    // @ts-ignore
     for (const [peerId, peer] of libp2p.peerStore.peers.entries()) {
       peers.push({
         id: peerId,

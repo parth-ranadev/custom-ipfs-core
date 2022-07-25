@@ -12,6 +12,7 @@ export function createGen ({ keychain }) {
    * @type {import('ipfs-core-types/src/key').API<{}>["gen"]}
    */
   const gen = (name, options = { type: DEFAULT_KEY_TYPE, size: DEFAULT_KEY_SIZE }) => {
+    // @ts-ignore
     return keychain.createKey(name, options.type || DEFAULT_KEY_TYPE, options.size || DEFAULT_KEY_SIZE, options.optPrivateKey)
   }
 
