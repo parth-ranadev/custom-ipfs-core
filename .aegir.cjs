@@ -5,7 +5,7 @@ const path = require('path')
 
 /** @type {import('aegir').Options["build"]["config"]} */
 const esbuild = {
-  inject: [path.join(__dirname, '../../scripts/node-globals.js')],
+  inject: [path.join(__dirname, './scripts/node-globals.js')],
   plugins: [
     {
       name: 'node built ins',

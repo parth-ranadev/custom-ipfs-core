@@ -26,6 +26,7 @@ export function createRouting ({ libp2p, repo, peerId, options }) {
     const pubsub = libp2p.pubsub
     const localDatastore = repo.datastore
 
+    // @ts-ignore
     pubsubDs = new IpnsPubsubDatastore(pubsub, localDatastore, peerId)
     ipnsStores.push(pubsubDs)
   }

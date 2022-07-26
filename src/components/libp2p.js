@@ -103,6 +103,7 @@ function getLibp2pOptions ({ options, config, datastore, keys, keychainConfig, p
     /**
      * @type {Partial<Libp2pOptions["modules"]>}
      */
+    // @ts-ignore
     modules: {
       pubsub: getPubsubRouter(),
       contentRouting: [],

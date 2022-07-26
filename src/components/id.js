@@ -49,6 +49,7 @@ export function createId ({ peerId, network }) {
 
     return {
       id: idStr,
+      // @ts-ignore
       publicKey: uint8ArrayToString(peer.publicKey.bytes, 'base64pad'),
       addresses: (peer.addresses || [])
         .map(ma => {
@@ -81,6 +82,7 @@ async function findPeer (peerId, libp2p, options) {
   let peer = libp2p.peerStore.get(peerId)
 
   if (!peer) {
+    // @ts-ignore
     peer = await findPeerOnDht(peerId, libp2p, options)
   }
 
@@ -93,7 +95,9 @@ async function findPeer (peerId, libp2p, options) {
   return {
     ...peer,
     publicKey,
+    // @ts-ignore
     metadata: peer.metadata || new Map(),
+    // @ts-ignore
     addresses: peer.addresses.map(addr => addr.multiaddr)
   }
 }
